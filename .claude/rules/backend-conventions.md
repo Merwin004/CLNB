@@ -141,6 +141,27 @@ backend/
   it — so it reappears in the LGU queue as pending again. Not fixed; would need `replaceRows()` to
   diff instead of delete+reinsert.
 
+## Deployment — Vercel (2026-08-25)
+
+- Backend and frontend are **two separate Vercel projects** (`backend/`, `frontend/` as each
+  project's root directory), not one — Vercel doesn't run a persistent `app.listen()` server, and
+  the two have unrelated build steps.
+- `backend/api/index.js` re-exports the already-`listen()`-free `app` from `src/app.js` as the
+  serverless entry point; `backend/vercel.json`'s catch-all rewrite (`/(.*) -> /api`) routes every
+  request to it. `src/index.js` (the `app.listen()` file) is untouched and still used for local
+  `npm run dev`/`start` — Vercel never calls it.
+- Backend env vars (Vercel project settings, not `.env`): `DATABASE_URL`, `JWT_SECRET`,
+  `CORS_ORIGIN` (set to the frontend's deployed URL). Frontend env var: `VITE_API_URL` (set to the
+  backend's deployed URL + `/api`) — Vite inlines this at **build** time, so changing it means
+  redeploying the frontend, not just updating the env var.
+- Live URLs as of 2026-08-25: frontend `https://frontend-delta-eight-ix7t1di5x7.vercel.app`,
+  backend `https://backend-nu-ochre-92.vercel.app`. Both were deployed via `vercel --prod` from
+  each package's directory — **not** yet auto-deploying from GitHub (`github.com/Merwin004/CLNB`).
+  `vercel git connect` refused to run from `backend/`/`frontend/` since neither is its own git
+  repo root (the monorepo's `.git` is at `CL/`); wiring up auto-deploy on push needs the Vercel
+  dashboard's Project Settings → Git → Connect for each project (Root Directory already set
+  correctly from the CLI deploy). Until then, redeploy manually with `vercel --prod` after pushing.
+
 ## Timezone — Asia/Manila
 
 - All server-side date/time logic assumes **Asia/Manila** (UTC+8), not server-local time or UTC-only
