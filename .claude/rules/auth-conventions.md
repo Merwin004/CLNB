@@ -12,6 +12,21 @@ description: JWT, password hashing, and CORS conventions for the backend
 - Verify tokens in an Express middleware; attach the decoded payload to `req.user`.
 - Do not put sensitive data (passwords, full user records) in the token payload — id + role is enough.
 
+## Roles
+
+- Three roles as of 2026-08-25: `encoder` (creates/edits/imports child profiles — the original
+  role), `lgu` (views children with pending service requests and refers them to DOLE/DSWD —
+  read-mostly, scoped to `/api/lgu/*`), `admin` (allowed everywhere; not yet assigned to any
+  seeded account). `users.role` is CHECK-constrained to these three.
+- `requireRole(...roles)` in `middleware/auth.js` mounts after `requireAuth` and 403s if
+  `req.user.role` isn't in the list — see `profiles.routes.js`/`import.routes.js`
+  (`requireRole('encoder', 'admin')`) and `lgu.routes.js` (`requireRole('lgu', 'admin')`). New
+  routes should pick an explicit role gate rather than leaving a route reachable by any
+  authenticated role by default.
+- The frontend mirrors this: `ProtectedRoute`'s optional `roles` prop (see `App.jsx`) redirects a
+  wrong-role signed-in user to their own home (`homeForRole()`) instead of erroring — this is a UX
+  nicety only, the real boundary is the backend's `requireRole`.
+
 ## Passwords (`bcryptjs`)
 
 - Hash on signup/password-change with a cost factor of 10-12 (`bcrypt.hash(password, 10)`).

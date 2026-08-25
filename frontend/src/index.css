@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  /* Public Sans: designed for U.S. government civic/form services (USWDS) — formal register,
+     tall x-height for legibility in dense data-entry UI. Used uniformly across the whole
+     system (headings included — no serif treatment), matching the /profiles data table's
+     typography. font-mono is reserved for control numbers/codes, same as the table. */
+  --font-sans: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* brand slate scale — see .claude/rules/design-tokens.md */
+  --color-brand-900: #4A6274;
+  --color-brand-700: #6B8191;
+  --color-brand-500: #8BA0AF;
+  --color-brand-400: #ADB8B9;
+  --color-brand-200: #CDD4CD;
+  --color-brand-100: #E9EAE8;
+
+  /* accent + semantic (extends the brand scale; see design-tokens.md) */
+  --color-accent: #AD7F35;
+  --color-accent-ink: #5C4116;
+  --color-accent-soft: #EFDFC0;
+  --color-good: #5C7A5E;
+  --color-good-soft: #DEE7DA;
+  --color-warn: #A8752F;
+  --color-warn-soft: #EFDCB8;
+}
+
+body {
+  background: var(--color-brand-100);
+  color: #2E3E48;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* Hides the scrollbar track/buttons (Windows shows these by default) on internal
+   scroll panes — the pane still scrolls via wheel/trackpad/touch, it just doesn't
+   show the chunky native scrollbar UI. Apply via className="scroll-hidden". */
+.scroll-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
